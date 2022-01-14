@@ -1,4 +1,4 @@
-<Activity mc:Ignorable="sap sap2010" x:Class="Main" mva:VisualBasic.Settings="{x:Null}" sap:VirtualizedContainerService.HintSize="772.8,1242.4" sap2010:WorkflowViewState.IdRef="ActivityBuilder_1" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib" xmlns:sd="clr-namespace:System.Data;assembly=System.Data" xmlns:si="clr-namespace:System.IO;assembly=mscorlib" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Activity mc:Ignorable="sap sap2010" x:Class="Main" mva:VisualBasic.Settings="{x:Null}" sap:VirtualizedContainerService.HintSize="1152,1422" sap2010:WorkflowViewState.IdRef="ActivityBuilder_1" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib" xmlns:sd="clr-namespace:System.Data;assembly=System.Data" xmlns:si="clr-namespace:System.IO;assembly=mscorlib" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <TextExpression.NamespacesForImplementation>
     <scg:List x:TypeArguments="x:String" Capacity="31">
       <x:String>System.Activities</x:String>
@@ -35,7 +35,7 @@
     </scg:List>
   </TextExpression.NamespacesForImplementation>
   <TextExpression.ReferencesForImplementation>
-    <scg:List x:TypeArguments="AssemblyReference" Capacity="26">
+    <scg:List x:TypeArguments="AssemblyReference" Capacity="52">
       <AssemblyReference>System.Activities</AssemblyReference>
       <AssemblyReference>Microsoft.VisualBasic</AssemblyReference>
       <AssemblyReference>mscorlib</AssemblyReference>
@@ -62,14 +62,17 @@
       <AssemblyReference>System.Runtime.Serialization</AssemblyReference>
       <AssemblyReference>UiPath.Excel.Activities.Design</AssemblyReference>
       <AssemblyReference>UiPath.Excel.Activities</AssemblyReference>
+      <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
     </scg:List>
   </TextExpression.ReferencesForImplementation>
-  <Sequence sap2010:Annotation.AnnotationText="1. Read EmployeeDetails.xlsx, Employees Worksheet&#xA;2. Request manual input from user to enter Employee Region&#xA;3. Filter the values by employee Region entered by user. &#xA;4. Count the resulting rows and create a new excel worksheet with the name - &quot;&lt;Count&gt;&lt;Region name&gt;&quot; &#xA;5. In the new sheet created, write the resulting rows. Order the data in ascending order of City and Descending Order of Name&#xA;&#xA;NOTE:&#xA;• Follow coding standards – Naming Conventions, Workflow modularization, Annotations, etc&#xA;• Handle all exceptions you could think of.&#xA;&#xA;Enhancements:&#xA;• Create Configuration excel. Read input excel name, sheet name, output file path from configuration instead of hardcoding in the workflow." DisplayName="Main Sequence" sap:VirtualizedContainerService.HintSize="376,1177.2" sap2010:WorkflowViewState.IdRef="Sequence_1">
+  <Sequence sap2010:Annotation.AnnotationText="1. Read EmployeeDetails.xlsx, Employees Worksheet&#xA;2. Request manual input from user to enter Employee Region&#xA;3. Filter the values by employee Region entered by user. &#xA;4. Count the resulting rows and create a new excel worksheet with the name - &quot;&lt;Count&gt;&lt;Region name&gt;&quot; &#xA;5. In the new sheet created, write the resulting rows. Order the data in ascending order of City and Descending Order of Name&#xA;&#xA;NOTE:&#xA;• Follow coding standards – Naming Conventions, Workflow modularization, Annotations, etc&#xA;• Handle all exceptions you could think of.&#xA;&#xA;Enhancements:&#xA;• Create Configuration excel. Read input excel name, sheet name, output file path from configuration instead of hardcoding in the workflow." DisplayName="Main Sequence" sap:VirtualizedContainerService.HintSize="376,1356.8" sap2010:WorkflowViewState.IdRef="Sequence_1">
     <Sequence.Variables>
-      <Variable x:TypeArguments="scg:Dictionary(x:String, x:String)" Name="dct_Config" />
       <Variable x:TypeArguments="sd:DataTable" Name="dt_Employees" />
       <Variable x:TypeArguments="scg:List(x:String)" Name="lst_UniqueRegions" />
       <Variable x:TypeArguments="x:String" Name="ChosenRegion" />
+      <Variable x:TypeArguments="scg:Dictionary(x:String, x:String)" Name="dct_Config" />
+      <Variable x:TypeArguments="x:Int32" Default="0" Name="RegionCounter" />
+      <Variable x:TypeArguments="sd:DataTable" Name="dt_FilteredEmployees" />
     </Sequence.Variables>
     <sap:WorkflowViewStateService.ViewState>
       <scg:Dictionary x:TypeArguments="x:String, x:Object">
@@ -77,228 +80,15 @@
         <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
       </scg:Dictionary>
     </sap:WorkflowViewStateService.ViewState>
-    <ui:LogMessage DisplayName="Log Message" sap:VirtualizedContainerService.HintSize="334,93.6" sap2010:WorkflowViewState.IdRef="LogMessage_1" Level="Info" Message="[&quot;Region filtering process started...&quot;]" />
-    <Sequence sap2010:Annotation.AnnotationText="Loads config file as a dictionary.&#xD;&#xA;&#xD;&#xA;All entries in dct_Config:&#xD;&#xA;- EmployeeFilePath&#xD;&#xA;- EmployeeSheetName&#xD;&#xA;- OutpoutFilePath" DisplayName="Load Config file" sap:VirtualizedContainerService.HintSize="334,195.6" sap2010:WorkflowViewState.IdRef="Sequence_2">
-      <Sequence.Variables>
-        <Variable x:TypeArguments="sd:DataTable" Name="dt_Config" />
-        <Variable x:TypeArguments="x:String" Name="ConfigFilePath" />
-      </Sequence.Variables>
-      <sap:WorkflowViewStateService.ViewState>
-        <scg:Dictionary x:TypeArguments="x:String, x:Object">
-          <x:Boolean x:Key="IsExpanded">False</x:Boolean>
-          <x:Boolean x:Key="IsPinned">False</x:Boolean>
-          <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
-        </scg:Dictionary>
-      </sap:WorkflowViewStateService.ViewState>
-      <ui:LogMessage DisplayName="Log Message" sap:VirtualizedContainerService.HintSize="437.6,93.6" sap2010:WorkflowViewState.IdRef="LogMessage_3" Level="Info" Message="[&quot;Loading Config File.&quot;]" />
-      <Assign DisplayName="Assign config file path" sap:VirtualizedContainerService.HintSize="437.6,59.6" sap2010:WorkflowViewState.IdRef="Assign_1">
-        <Assign.To>
-          <OutArgument x:TypeArguments="x:String">[ConfigFilePath]</OutArgument>
-        </Assign.To>
-        <Assign.Value>
-          <InArgument x:TypeArguments="x:String">Config.xlsx</InArgument>
-        </Assign.Value>
-      </Assign>
-      <TryCatch sap2010:Annotation.AnnotationText="Check if config file can be loaded, if not, throw IOException." DisplayName="Try Catch" sap:VirtualizedContainerService.HintSize="437.6,350.8" sap2010:WorkflowViewState.IdRef="TryCatch_1">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-        <TryCatch.Try>
-          <ui:ReadRange AddHeaders="True" DataTable="[dt_Config]" DisplayName="Load config file as dictionary" sap:VirtualizedContainerService.HintSize="334,87.2" sap2010:WorkflowViewState.IdRef="ReadRange_1" SheetName="Settings" WorkbookPath="[ConfigFilePath]">
-            <ui:ReadRange.Range>
-              <InArgument x:TypeArguments="x:String">
-                <Literal x:TypeArguments="x:String" Value="" />
-              </InArgument>
-            </ui:ReadRange.Range>
-          </ui:ReadRange>
-        </TryCatch.Try>
-        <TryCatch.Catches>
-          <Catch x:TypeArguments="si:IOException" sap:VirtualizedContainerService.HintSize="403.6,22.8" sap2010:WorkflowViewState.IdRef="Catch`1_1">
-            <sap:WorkflowViewStateService.ViewState>
-              <scg:Dictionary x:TypeArguments="x:String, x:Object">
-                <x:Boolean x:Key="IsExpanded">False</x:Boolean>
-                <x:Boolean x:Key="IsPinned">False</x:Boolean>
-              </scg:Dictionary>
-            </sap:WorkflowViewStateService.ViewState>
-            <ActivityAction x:TypeArguments="si:IOException">
-              <ActivityAction.Argument>
-                <DelegateInArgument x:TypeArguments="si:IOException" Name="exception" />
-              </ActivityAction.Argument>
-              <Sequence sap:VirtualizedContainerService.HintSize="242,114" sap2010:WorkflowViewState.IdRef="Sequence_4">
-                <sap:WorkflowViewStateService.ViewState>
-                  <scg:Dictionary x:TypeArguments="x:String, x:Object">
-                    <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-                  </scg:Dictionary>
-                </sap:WorkflowViewStateService.ViewState>
-                <TerminateWorkflow DisplayName="Terminate Workflow" Exception="[exception]" sap:VirtualizedContainerService.HintSize="200,22" sap2010:WorkflowViewState.IdRef="TerminateWorkflow_1" />
-              </Sequence>
-            </ActivityAction>
-          </Catch>
-        </TryCatch.Catches>
-      </TryCatch>
-      <Assign sap2010:Annotation.AnnotationText="Initialize empty dictionary for config file." DisplayName="Assign empty dictionary" sap:VirtualizedContainerService.HintSize="437.6,90.8" sap2010:WorkflowViewState.IdRef="Assign_2">
-        <Assign.To>
-          <OutArgument x:TypeArguments="scg:Dictionary(x:String, x:String)">[dct_Config]</OutArgument>
-        </Assign.To>
-        <Assign.Value>
-          <InArgument x:TypeArguments="scg:Dictionary(x:String, x:String)">[New Dictionary(Of String, String)]</InArgument>
-        </Assign.Value>
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </Assign>
-      <ui:ForEachRow ColumnNames="{x:Null}" CurrentIndex="{x:Null}" sap2010:Annotation.AnnotationText="Loop through dt_Config and assign every row to dct_Config." DataTable="[dt_Config]" DisplayName="For Each Row in dt_Config" sap:VirtualizedContainerService.HintSize="437.6,317.2" sap2010:WorkflowViewState.IdRef="ForEachRow_1">
-        <ui:ForEachRow.Body>
-          <ActivityAction x:TypeArguments="sd:DataRow">
-            <ActivityAction.Argument>
-              <DelegateInArgument x:TypeArguments="sd:DataRow" Name="Row" />
-            </ActivityAction.Argument>
-            <Sequence DisplayName="Body" sap:VirtualizedContainerService.HintSize="304.4,151.6" sap2010:WorkflowViewState.IdRef="Sequence_3">
-              <sap:WorkflowViewStateService.ViewState>
-                <scg:Dictionary x:TypeArguments="x:String, x:Object">
-                  <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-                </scg:Dictionary>
-              </sap:WorkflowViewStateService.ViewState>
-              <Assign DisplayName="Assign config entries to dictionary" sap:VirtualizedContainerService.HintSize="262.4,59.6" sap2010:WorkflowViewState.IdRef="Assign_3">
-                <Assign.To>
-                  <OutArgument x:TypeArguments="x:String">[dct_Config(Row("Name").ToString)]</OutArgument>
-                </Assign.To>
-                <Assign.Value>
-                  <InArgument x:TypeArguments="x:String">[Row("Value").ToString]</InArgument>
-                </Assign.Value>
-              </Assign>
-            </Sequence>
-          </ActivityAction>
-        </ui:ForEachRow.Body>
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </ui:ForEachRow>
-      <ui:LogMessage DisplayName="Log Message" sap:VirtualizedContainerService.HintSize="437.6,93.6" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Info" Message="[&quot;Config file loaded.&quot;]" />
-    </Sequence>
-    <Sequence sap2010:Annotation.AnnotationText="Loads Employees file in dt_Employees." DisplayName="Load Excel file" sap:VirtualizedContainerService.HintSize="334,113.6" sap2010:WorkflowViewState.IdRef="Sequence_6">
-      <sap:WorkflowViewStateService.ViewState>
-        <scg:Dictionary x:TypeArguments="x:String, x:Object">
-          <x:Boolean x:Key="IsExpanded">False</x:Boolean>
-          <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
-          <x:Boolean x:Key="IsPinned">False</x:Boolean>
-        </scg:Dictionary>
-      </sap:WorkflowViewStateService.ViewState>
-      <TryCatch sap2010:Annotation.AnnotationText="Check if Employees excel file can be loaded, if not, throw IOException." DisplayName="Try Catch" sap:VirtualizedContainerService.HintSize="437.6,395.6" sap2010:WorkflowViewState.IdRef="TryCatch_2">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-        <TryCatch.Try>
-          <ui:ReadRange AddHeaders="True" sap2010:Annotation.AnnotationText="Checks in Config dictionary for the file path of the Employees file." DataTable="[dt_Employees]" DisplayName="Load Employees as dt_Employees" sap:VirtualizedContainerService.HintSize="334,132" sap2010:WorkflowViewState.IdRef="ReadRange_2" SheetName="[dct_Config(&quot;EmployeesSheetName&quot;)]" WorkbookPath="[dct_Config(&quot;EmployeesFilePath&quot;)]">
-            <ui:ReadRange.Range>
-              <InArgument x:TypeArguments="x:String">
-                <Literal x:TypeArguments="x:String" Value="" />
-              </InArgument>
-            </ui:ReadRange.Range>
-            <sap:WorkflowViewStateService.ViewState>
-              <scg:Dictionary x:TypeArguments="x:String, x:Object">
-                <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
-              </scg:Dictionary>
-            </sap:WorkflowViewStateService.ViewState>
-          </ui:ReadRange>
-        </TryCatch.Try>
-        <TryCatch.Catches>
-          <Catch x:TypeArguments="si:IOException" sap:VirtualizedContainerService.HintSize="403.6,22.8" sap2010:WorkflowViewState.IdRef="Catch`1_2">
-            <sap:WorkflowViewStateService.ViewState>
-              <scg:Dictionary x:TypeArguments="x:String, x:Object">
-                <x:Boolean x:Key="IsExpanded">False</x:Boolean>
-                <x:Boolean x:Key="IsPinned">False</x:Boolean>
-              </scg:Dictionary>
-            </sap:WorkflowViewStateService.ViewState>
-            <ActivityAction x:TypeArguments="si:IOException">
-              <ActivityAction.Argument>
-                <DelegateInArgument x:TypeArguments="si:IOException" Name="exception" />
-              </ActivityAction.Argument>
-              <Sequence sap:VirtualizedContainerService.HintSize="242,114" sap2010:WorkflowViewState.IdRef="Sequence_5">
-                <sap:WorkflowViewStateService.ViewState>
-                  <scg:Dictionary x:TypeArguments="x:String, x:Object">
-                    <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-                  </scg:Dictionary>
-                </sap:WorkflowViewStateService.ViewState>
-                <TerminateWorkflow DisplayName="Terminate Workflow" Exception="[exception]" sap:VirtualizedContainerService.HintSize="200,22" sap2010:WorkflowViewState.IdRef="TerminateWorkflow_2" />
-              </Sequence>
-            </ActivityAction>
-          </Catch>
-        </TryCatch.Catches>
-      </TryCatch>
-    </Sequence>
-    <Sequence sap2010:Annotation.AnnotationText="Loads all the unique regions from dt_Employees to lst_UniqueRegions in order to give the user a list of regions to choose from." DisplayName="Load unique regions" sap:VirtualizedContainerService.HintSize="334,162.8" sap2010:WorkflowViewState.IdRef="Sequence_8">
-      <sap:WorkflowViewStateService.ViewState>
-        <scg:Dictionary x:TypeArguments="x:String, x:Object">
-          <x:Boolean x:Key="IsExpanded">False</x:Boolean>
-          <x:Boolean x:Key="IsPinned">False</x:Boolean>
-          <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
-        </scg:Dictionary>
-      </sap:WorkflowViewStateService.ViewState>
-      <ui:LogMessage DisplayName="Log Message" sap:VirtualizedContainerService.HintSize="560,93.6" sap2010:WorkflowViewState.IdRef="LogMessage_6" Level="Info" Message="[&quot;Unique region loading started...&quot;]" />
-      <Assign sap:VirtualizedContainerService.HintSize="560,59.6" sap2010:WorkflowViewState.IdRef="Assign_4">
-        <Assign.To>
-          <OutArgument x:TypeArguments="scg:List(x:String)">[lst_UniqueRegions]</OutArgument>
-        </Assign.To>
-        <Assign.Value>
-          <InArgument x:TypeArguments="scg:List(x:String)">[New List(Of String)]</InArgument>
-        </Assign.Value>
-      </Assign>
-      <ui:ForEachRow ColumnNames="{x:Null}" CurrentIndex="{x:Null}" DataTable="[dt_Employees]" DisplayName="For Each Row in Data Table" sap:VirtualizedContainerService.HintSize="560,630.4" sap2010:WorkflowViewState.IdRef="ForEachRow_2">
-        <ui:ForEachRow.Body>
-          <ActivityAction x:TypeArguments="sd:DataRow">
-            <ActivityAction.Argument>
-              <DelegateInArgument x:TypeArguments="sd:DataRow" Name="Employee" />
-            </ActivityAction.Argument>
-            <Sequence DisplayName="Body" sap:VirtualizedContainerService.HintSize="526,509.6" sap2010:WorkflowViewState.IdRef="Sequence_7">
-              <sap:WorkflowViewStateService.ViewState>
-                <scg:Dictionary x:TypeArguments="x:String, x:Object">
-                  <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-                </scg:Dictionary>
-              </sap:WorkflowViewStateService.ViewState>
-              <If Condition="[Not lst_UniqueRegions.Contains(Employee(&quot;Region&quot;).ToString)]" sap:VirtualizedContainerService.HintSize="484,417.6" sap2010:WorkflowViewState.IdRef="If_1">
-                <If.Then>
-                  <Sequence DisplayName="Fill lst_UniqueRegions" sap:VirtualizedContainerService.HintSize="280,227.2" sap2010:WorkflowViewState.IdRef="Sequence_9">
-                    <sap:WorkflowViewStateService.ViewState>
-                      <scg:Dictionary x:TypeArguments="x:String, x:Object">
-                        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-                      </scg:Dictionary>
-                    </sap:WorkflowViewStateService.ViewState>
-                    <InvokeMethod DisplayName="Invoke Method" sap:VirtualizedContainerService.HintSize="238,135.2" sap2010:WorkflowViewState.IdRef="InvokeMethod_1" MethodName="Add">
-                      <InvokeMethod.TargetObject>
-                        <InArgument x:TypeArguments="scg:List(x:String)">[lst_UniqueRegions]</InArgument>
-                      </InvokeMethod.TargetObject>
-                      <InArgument x:TypeArguments="x:String">
-                        <mva:VisualBasicValue x:TypeArguments="x:String" ExpressionText="Employee(&quot;Region&quot;).ToString" />
-                      </InArgument>
-                    </InvokeMethod>
-                  </Sequence>
-                </If.Then>
-                <If.Else>
-                  <Sequence sap2010:WorkflowViewState.IdRef="Sequence_10">
-                    <sap:WorkflowViewStateService.ViewState>
-                      <scg:Dictionary x:TypeArguments="x:String, x:Object">
-                        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-                      </scg:Dictionary>
-                    </sap:WorkflowViewStateService.ViewState>
-                  </Sequence>
-                </If.Else>
-              </If>
-            </Sequence>
-          </ActivityAction>
-        </ui:ForEachRow.Body>
-      </ui:ForEachRow>
-      <ui:LogMessage DisplayName="Log Message" sap:VirtualizedContainerService.HintSize="560,93.6" sap2010:WorkflowViewState.IdRef="LogMessage_7" Level="Info" Message="[&quot;Unique regions loaded.&quot;]" />
-    </Sequence>
-    <Flowchart DisplayName="Check if region not empty" sap:VirtualizedContainerService.HintSize="654,636" sap2010:WorkflowViewState.IdRef="Flowchart_1">
+    <ui:LogMessage DisplayName="Log Message" sap:VirtualizedContainerService.HintSize="334,92.8" sap2010:WorkflowViewState.IdRef="LogMessage_1" Level="Info" Message="[&quot;Region filtering process started...&quot;]" />
+    <ui:InvokeWorkflowFile ArgumentsVariable="{x:Null}" ContinueOnError="{x:Null}" DisplayName="Invoke Initializer workflow" sap:VirtualizedContainerService.HintSize="334,112.8" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_1" UnSafe="False" WorkflowFileName="Initializer.xaml">
+      <ui:InvokeWorkflowFile.Arguments>
+        <OutArgument x:TypeArguments="scg:Dictionary(x:String, x:String)" x:Key="out_dct_Config">[dct_Config]</OutArgument>
+        <OutArgument x:TypeArguments="sd:DataTable" x:Key="out_dt_Employees">[dt_Employees]</OutArgument>
+        <OutArgument x:TypeArguments="scg:List(x:String)" x:Key="out_lst_UniqueRegions">[lst_UniqueRegions]</OutArgument>
+      </ui:InvokeWorkflowFile.Arguments>
+    </ui:InvokeWorkflowFile>
+    <Flowchart sap2010:Annotation.AnnotationText="Shows multiple choice list of regions to the user through an input box, then checks if input is not empty, otherwise, input dialog is shown again." DisplayName="Check if region not empty" sap:VirtualizedContainerService.HintSize="334,144" sap2010:WorkflowViewState.IdRef="Flowchart_1">
       <sap:WorkflowViewStateService.ViewState>
         <scg:Dictionary x:TypeArguments="x:String, x:Object">
           <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -306,6 +96,7 @@
           <av:Size x:Key="ShapeSize">60,75.2</av:Size>
           <av:PointCollection x:Key="ConnectorLocation">300,77.7 300,145</av:PointCollection>
           <x:Double x:Key="Width">620</x:Double>
+          <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
         </scg:Dictionary>
       </sap:WorkflowViewStateService.ViewState>
       <Flowchart.StartNode>
@@ -316,10 +107,10 @@
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <av:Point x:Key="ShapeLocation">200,145</av:Point>
             <av:Size x:Key="ShapeSize">200,130</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">300,275 300,305 299.2,305 299.2,324</av:PointCollection>
+            <av:PointCollection x:Key="ConnectorLocation">300,275 300,305 296,305 296,324</av:PointCollection>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
-        <ui:InputDialog OptionsString="{x:Null}" sap2010:Annotation.AnnotationText="Gives the user a list of unique regions to choose from. Region is then saved in ChosenRegion." DisplayName="Input Dialog" sap:VirtualizedContainerService.HintSize="334,342.8" sap2010:WorkflowViewState.IdRef="InputDialog_2" IsPassword="False" Label="Please select a region to create a sheet off all employees from that region" Options="[lst_UniqueRegions.ToArray]" Title="Choose region">
+        <ui:InputDialog OptionsString="{x:Null}" sap2010:Annotation.AnnotationText="Gives the user a list of unique regions to choose from. Region is then saved in ChosenRegion." DisplayName="Input region" sap:VirtualizedContainerService.HintSize="200,130" sap2010:WorkflowViewState.IdRef="InputDialog_2" IsPassword="False" Label="Please select a region to create a sheet off all employees from that region" Options="[lst_UniqueRegions.ToArray]" Title="Choose region">
           <ui:InputDialog.Result>
             <OutArgument x:TypeArguments="x:String">[ChosenRegion]</OutArgument>
           </ui:InputDialog.Result>
@@ -330,18 +121,15 @@
           </sap:WorkflowViewStateService.ViewState>
         </ui:InputDialog>
         <FlowStep.Next>
-          <FlowDecision x:Name="__ReferenceID1" sap2010:Annotation.AnnotationText="If true ChosenRegion is empty." DisplayName="Flow Decision" sap:VirtualizedContainerService.HintSize="153.6,132" sap2010:WorkflowViewState.IdRef="FlowDecision_1">
-            <FlowDecision.Condition>
-              <mva:VisualBasicValue x:TypeArguments="x:Boolean" ExpressionText="String.IsNullOrEmpty(ChosenRegion)" />
-            </FlowDecision.Condition>
+          <FlowDecision x:Name="__ReferenceID1" sap2010:Annotation.AnnotationText="If output is true, ChosenRegion is empty. Input will be shown again" Condition="[String.IsNullOrEmpty(ChosenRegion)]" DisplayName="Flow Decision" sap:VirtualizedContainerService.HintSize="147.2,164.8" sap2010:WorkflowViewState.IdRef="FlowDecision_1">
             <sap:WorkflowViewStateService.ViewState>
               <scg:Dictionary x:TypeArguments="x:String, x:Object">
                 <x:Boolean x:Key="IsExpanded">True</x:Boolean>
                 <av:Point x:Key="ShapeLocation">222.4,324</av:Point>
-                <av:Size x:Key="ShapeSize">153.6,132</av:Size>
-                <av:PointCollection x:Key="TrueConnector">222.4,390 100,390 100,326.2</av:PointCollection>
+                <av:Size x:Key="ShapeSize">147.2,164.8</av:Size>
+                <av:PointCollection x:Key="TrueConnector">222.4,406.4 100,406.4 100,326.2</av:PointCollection>
                 <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
-                <av:PointCollection x:Key="FalseConnector">376,390 520,390 520,386.2</av:PointCollection>
+                <av:PointCollection x:Key="FalseConnector">369.6,406.4 520,406.4 520,386.2</av:PointCollection>
               </scg:Dictionary>
             </sap:WorkflowViewStateService.ViewState>
             <FlowDecision.True>
@@ -353,7 +141,7 @@
                     <av:PointCollection x:Key="ConnectorLocation">100,273.8 100,210 200,210</av:PointCollection>
                   </scg:Dictionary>
                 </sap:WorkflowViewStateService.ViewState>
-                <ui:MessageBox Caption="{x:Null}" ChosenButton="{x:Null}" AutoCloseAfter="00:00:03" DisplayName="Message Box" sap:VirtualizedContainerService.HintSize="200,52.4" sap2010:WorkflowViewState.IdRef="MessageBox_1" Text="[&quot;Please choose a region.&quot;]">
+                <ui:MessageBox Caption="{x:Null}" ChosenButton="{x:Null}" AutoCloseAfter="00:00:03" DisplayName="Show no region selected" sap:VirtualizedContainerService.HintSize="200,52.4" sap2010:WorkflowViewState.IdRef="MessageBox_1" Text="[&quot;Please choose a region.&quot;]">
                   <sap:WorkflowViewStateService.ViewState>
                     <scg:Dictionary x:TypeArguments="x:String, x:Object">
                       <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -389,5 +177,130 @@
       <x:Reference>__ReferenceID2</x:Reference>
       <x:Reference>__ReferenceID3</x:Reference>
     </Flowchart>
+    <Sequence sap2010:Annotation.AnnotationText="Filters dt_Employees by adding any rows that do contain the ChosenRegion to dt_FilteredEmployees" DisplayName="Filter Employees" sap:VirtualizedContainerService.HintSize="334,144" sap2010:WorkflowViewState.IdRef="Sequence_14">
+      <sap:WorkflowViewStateService.ViewState>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+          <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+          <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+        </scg:Dictionary>
+      </sap:WorkflowViewStateService.ViewState>
+      <ui:BuildDataTable sap2010:Annotation.AnnotationText="Creates new datatable for the sorted rows" DataTable="[dt_FilteredEmployees]" DisplayName="Build dt_FilteredEmployees" sap:VirtualizedContainerService.HintSize="560,90.4" sap2010:WorkflowViewState.IdRef="BuildDataTable_2" TableInfo="&lt;NewDataSet&gt;&#xA;  &lt;xs:schema id=&quot;NewDataSet&quot; xmlns=&quot;&quot; xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:msdata=&quot;urn:schemas-microsoft-com:xml-msdata&quot;&gt;&#xA;    &lt;xs:element name=&quot;NewDataSet&quot; msdata:IsDataSet=&quot;true&quot; msdata:MainDataTable=&quot;TableName&quot; msdata:UseCurrentLocale=&quot;true&quot;&gt;&#xA;      &lt;xs:complexType&gt;&#xA;        &lt;xs:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;&#xA;          &lt;xs:element name=&quot;TableName&quot;&gt;&#xA;            &lt;xs:complexType&gt;&#xA;              &lt;xs:sequence&gt;&#xA;                &lt;xs:element name=&quot;Name&quot; msdata:Caption=&quot;&quot; type=&quot;xs:string&quot; /&gt;&#xA;                &lt;xs:element name=&quot;City&quot; msdata:Caption=&quot;&quot; type=&quot;xs:string&quot; /&gt;&#xA;                &lt;xs:element name=&quot;Region&quot; msdata:Caption=&quot;&quot;&gt;&#xA;                  &lt;xs:simpleType&gt;&#xA;                    &lt;xs:restriction base=&quot;xs:string&quot;&gt;&#xA;                      &lt;xs:maxLength value=&quot;100&quot; /&gt;&#xA;                    &lt;/xs:restriction&gt;&#xA;                  &lt;/xs:simpleType&gt;&#xA;                &lt;/xs:element&gt;&#xA;              &lt;/xs:sequence&gt;&#xA;            &lt;/xs:complexType&gt;&#xA;          &lt;/xs:element&gt;&#xA;        &lt;/xs:choice&gt;&#xA;      &lt;/xs:complexType&gt;&#xA;    &lt;/xs:element&gt;&#xA;  &lt;/xs:schema&gt;&#xA;&lt;/NewDataSet&gt;">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </ui:BuildDataTable>
+      <ui:ForEachRow ColumnNames="{x:Null}" CurrentIndex="{x:Null}" DataTable="[dt_Employees]" DisplayName="For Each Row in dt_Employees" sap:VirtualizedContainerService.HintSize="560,868" sap2010:WorkflowViewState.IdRef="ForEachRow_3">
+        <ui:ForEachRow.Body>
+          <ActivityAction x:TypeArguments="sd:DataRow">
+            <ActivityAction.Argument>
+              <DelegateInArgument x:TypeArguments="sd:DataRow" Name="Employee" />
+            </ActivityAction.Argument>
+            <Sequence DisplayName="Body" sap:VirtualizedContainerService.HintSize="526,748" sap2010:WorkflowViewState.IdRef="Sequence_13">
+              <sap:WorkflowViewStateService.ViewState>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                  <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                </scg:Dictionary>
+              </sap:WorkflowViewStateService.ViewState>
+              <If sap2010:Annotation.AnnotationText="Checks if The current row's Region is equal to the ChosenRegion, if true, add to dt_FilteredEmployees" Condition="[Employee(&quot;Region&quot;).ToString.Contains(ChosenRegion)]" DisplayName="If region = ChosenRegion" sap:VirtualizedContainerService.HintSize="484,656" sap2010:WorkflowViewState.IdRef="If_2">
+                <sap:WorkflowViewStateService.ViewState>
+                  <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                    <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+                  </scg:Dictionary>
+                </sap:WorkflowViewStateService.ViewState>
+                <If.Then>
+                  <Sequence sap:VirtualizedContainerService.HintSize="376,423.2" sap2010:WorkflowViewState.IdRef="Sequence_11">
+                    <sap:WorkflowViewStateService.ViewState>
+                      <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                      </scg:Dictionary>
+                    </sap:WorkflowViewStateService.ViewState>
+                    <Assign DisplayName="RegionCounter + 1" sap:VirtualizedContainerService.HintSize="334,59.2" sap2010:WorkflowViewState.IdRef="Assign_5">
+                      <Assign.To>
+                        <OutArgument x:TypeArguments="x:Int32">[RegionCounter]</OutArgument>
+                      </Assign.To>
+                      <Assign.Value>
+                        <InArgument x:TypeArguments="x:Int32">[RegionCounter + 1]</InArgument>
+                      </Assign.Value>
+                    </Assign>
+                    <ui:AddDataRow DataRow="{x:Null}" sap2010:Annotation.AnnotationText="Extracts all the info from selected row (from dt_Employees) and inputs it in dt_FilteredEmployees." ArrayRow="[{Employee(&quot;Name&quot;),Employee(&quot;City&quot;),Employee(&quot;Region&quot;)}]" DataTable="[dt_FilteredEmployees]" DisplayName="Add Data Row to dt_FilteredEmployees" sap:VirtualizedContainerService.HintSize="334,232" sap2010:WorkflowViewState.IdRef="AddDataRow_2">
+                      <sap:WorkflowViewStateService.ViewState>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                          <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+                        </scg:Dictionary>
+                      </sap:WorkflowViewStateService.ViewState>
+                    </ui:AddDataRow>
+                  </Sequence>
+                </If.Then>
+                <If.Else>
+                  <Sequence sap:VirtualizedContainerService.HintSize="200,84.4" sap2010:WorkflowViewState.IdRef="Sequence_12">
+                    <sap:WorkflowViewStateService.ViewState>
+                      <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                      </scg:Dictionary>
+                    </sap:WorkflowViewStateService.ViewState>
+                  </Sequence>
+                </If.Else>
+              </If>
+            </Sequence>
+          </ActivityAction>
+        </ui:ForEachRow.Body>
+      </ui:ForEachRow>
+    </Sequence>
+    <Sequence sap2010:Annotation.AnnotationText="Orders dt_Employees on ascending order of City and descending order of Name" DisplayName="Order Employees" sap:VirtualizedContainerService.HintSize="334,128" sap2010:WorkflowViewState.IdRef="Sequence_16">
+      <sap:WorkflowViewStateService.ViewState>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+          <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+          <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          <x:Boolean x:Key="IsPinned">False</x:Boolean>
+        </scg:Dictionary>
+      </sap:WorkflowViewStateService.ViewState>
+      <ui:SortDataTable ColumnIndex="{x:Null}" DataColumn="{x:Null}" sap2010:Annotation.AnnotationText="Orders City column in descending order" ColumnName="City" DataTable="[dt_FilteredEmployees]" DisplayName="Sort dt_FilteredEmployees" sap:VirtualizedContainerService.HintSize="334,273.2" sap2010:WorkflowViewState.IdRef="SortDataTable_1" Order="Ascending" OutputDataTable="[dt_FilteredEmployees]" SortOrder="Ascending">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </ui:SortDataTable>
+      <ui:SortDataTable ColumnIndex="{x:Null}" DataColumn="{x:Null}" sap2010:Annotation.AnnotationText="Orders Name column in ascending order." ColumnName="Name" DataTable="[dt_FilteredEmployees]" DisplayName="Sort dt_FilteredEmployees" sap:VirtualizedContainerService.HintSize="334,273.2" sap2010:WorkflowViewState.IdRef="SortDataTable_2" Order="Decending" OutputDataTable="[dt_FilteredEmployees]" SortOrder="Descending">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </ui:SortDataTable>
+    </Sequence>
+    <Sequence sap2010:Annotation.AnnotationText="Writes the filtered dt_Employees to a new Excel workbook under the tab &quot;Employees&quot;." DisplayName="Write Employees" sap:VirtualizedContainerService.HintSize="476,462.8" sap2010:WorkflowViewState.IdRef="Sequence_15">
+      <sap:WorkflowViewStateService.ViewState>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+          <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+          <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          <x:Boolean x:Key="IsPinned">False</x:Boolean>
+        </scg:Dictionary>
+      </sap:WorkflowViewStateService.ViewState>
+      <TryCatch DisplayName="Try Writing dt to excel" sap:VirtualizedContainerService.HintSize="434,326.8" sap2010:WorkflowViewState.IdRef="TryCatch_1">
+        <TryCatch.Try>
+          <ui:WriteRange AddHeaders="False" DataTable="[dt_FilteredEmployees]" DisplayName="Write dt_FilteredEmployees" sap:VirtualizedContainerService.HintSize="334,115.2" sap2010:WorkflowViewState.IdRef="WriteRange_1" SheetName="[dct_Config(&quot;EmployeesSheetName&quot;)]" StartingCell="A1" WorkbookPath="[dct_Config(&quot;OutputFilePath&quot;)+RegionCounter.ToString+&quot; &quot;+ChosenRegion+&quot;.xlsx&quot;]" />
+        </TryCatch.Try>
+        <TryCatch.Catches>
+          <Catch x:TypeArguments="si:IOException" sap:VirtualizedContainerService.HintSize="400,162.8" sap2010:WorkflowViewState.IdRef="Catch`1_1">
+            <sap:WorkflowViewStateService.ViewState>
+              <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                <x:Boolean x:Key="IsPinned">False</x:Boolean>
+              </scg:Dictionary>
+            </sap:WorkflowViewStateService.ViewState>
+            <ActivityAction x:TypeArguments="si:IOException">
+              <ActivityAction.Argument>
+                <DelegateInArgument x:TypeArguments="si:IOException" Name="exception" />
+              </ActivityAction.Argument>
+              <ui:LogMessage DisplayName="Log Message" sap:VirtualizedContainerService.HintSize="334,92.8" sap2010:WorkflowViewState.IdRef="LogMessage_9" Level="Fatal" Message="[&quot;File could not be written: &quot; + exception.Message]" />
+            </ActivityAction>
+          </Catch>
+        </TryCatch.Catches>
+      </TryCatch>
+    </Sequence>
   </Sequence>
 </Activity>
